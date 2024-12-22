@@ -13,6 +13,9 @@ export default function Home() {
 
   const [filmes, setFilmes] = useState([])
 
+  //loading
+  const [loading,setLoading] = useState(true)
+
   useEffect(()=>{
     async function loadFilmes(){
       const response = await api.get("movie/now_playing",{
@@ -23,9 +26,18 @@ export default function Home() {
         }
       })
       setFilmes(response.data.results.slice(0,10))
+      setLoading(false)
     }
     loadFilmes()
   },[])
+
+  if(loading){
+    return(
+      <div className='loading'>
+        <h2>Carregando filmes...</h2>
+      </div>
+    )
+  }
 
   return (
     <div className='conteiner'>
