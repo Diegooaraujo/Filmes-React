@@ -25,8 +25,8 @@ export default function Home() {
           page:1
         }
       })
-      setFilmes(response.data.results.slice(0,10))
-      setLoading(false)
+      setFilmes(response.data.results.slice(0,10)) //slice(0,10) para pegar apenas 10 filmes
+      setLoading(false) //quando carregar os filmes, o loading some
     }
     loadFilmes()
   },[])
