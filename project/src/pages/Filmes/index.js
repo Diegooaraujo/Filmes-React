@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams,useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import './filmes.css'
 
@@ -7,6 +7,7 @@ import api from '../../services/api'
 
 export default function Filme() {
   const { id } = useParams() //precisa ser o mesmo nome do parametro que esta na rota
+  const navigate = useNavigate();
   const [filme,setFilme] = useState({})
   const [loading,setLoading] = useState(true)
 
@@ -20,11 +21,13 @@ export default function Filme() {
       })
         .then((response) => {
           setFilme(response.data)
-          console.log(response.data)
+          // console.log(response.data)
           setLoading(false)
         })
         .catch(()=>{
-          console.log('Erro ao buscar filme')
+          //se o filme nao existir, redireciona para a pagina inicial
+          navigate('/',{replace:true}) //redireciona para a pagina inicial
+          return;
         })
     }
     loadFilme()
@@ -32,8 +35,25 @@ export default function Filme() {
     return () => {
       console.log('Componente desmontado')
     }
-  }, [])
+  }, [navigate, id])
 
+  function salvarFilme(){
+    const minhaLista = localStorage.getItem('@filmes')
+
+    let filmesSalvos = JSON.parse(minhaLista) || [] //pegando os filmes salvos no localStorage e transformando em um array
+
+    //se tiver algum filme salvo com o mesmo id, nao salva
+    const hasFilme = filmesSalvos.some((filmesSalvos)=> //some() verifica se tem algum item igual ao que esta sendo passado
+     filmesSalvos.id === filme.id
+
+    )
+    if(hasFilme){
+      alert("Você já possui esse filme salvo")
+      return;
+    }
+    filmesSalvos.push(filme);
+    localStorage.setItem("@filmes",JSON.stringify(filmesSalvos))
+  }
   if(loading){
     return(
       <div className='filme'>
@@ -41,6 +61,7 @@ export default function Filme() {
       </div>
       )
   }
+ 
   return (
     <div className='filme-info'>
       <h1>{filme.title}</h1>
@@ -49,11 +70,12 @@ export default function Filme() {
       <p>{filme.overview}</p>
 
       <strong>Avaliação: {filme.vote_average} /10</strong>
+      
 
       <div className='areaButton'>
-        <button>Salvar</button>
+        <button onClick={salvarFilme}>Salvar</button>
         <button>
-          <a href="#">
+          <a target="_blank" href={`https://www.youtube.com/results?search_query=${filme.title}+trailer`}  rel='noreferrer'>
             Treiler
           </a>
         </button>
