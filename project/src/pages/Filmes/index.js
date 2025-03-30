@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams,useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import './filmes.css'
+import { toast } from 'react-toastify'
 
 import api from '../../services/api'
 
@@ -48,11 +49,12 @@ export default function Filme() {
 
     )
     if(hasFilme){
-      alert("Você já possui esse filme salvo")
+      toast.warn("Esse filme já está na sua lista!")
       return;
     }
     filmesSalvos.push(filme);
     localStorage.setItem("@filmes",JSON.stringify(filmesSalvos))
+    toast.success("Filme salvo com sucesso!")
   }
   if(loading){
     return(
